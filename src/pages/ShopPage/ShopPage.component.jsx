@@ -1,26 +1,28 @@
-import React from 'react';
-import './shoppage.styles.scss';
-import SHOP_DATA from './shop-data.js';
-import PreviewCollection from '../../components/preview-collection/preview-collection.component';
+import React from "react";
+import CollectionsOverviewContainer from '../../components/collections-overview/collections-overview-container.component';
+import { connect } from 'react-redux';
+import { fetchCollectionsStartAsync } from '../../redux/shop/shop-actions';
 
 class ShopPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            collections: SHOP_DATA
-        }
+
+    componentDidMount() {
+        this.props.fetchCollectionsAsync();
     }
+
     render() {
-        const { collections } = this.state;
         return (
-            <div className='shop-page'>
-                {collections.map(({id, ...otherCollectionProps}) => <PreviewCollection key={id} {...otherCollectionProps} />)}            
-            </div>            
+            <div className="shop-page">
+                <CollectionsOverviewContainer/>
+            </div>
         )
     }
 }
 
-export default ShopPage;
+const mapDispatchToProps = dispatch => ({
+    fetchCollectionsAsync: ()=> dispatch(fetchCollectionsStartAsync())
+})
+
+export default connect(null, mapDispatchToProps)(ShopPage);
 
 
 
