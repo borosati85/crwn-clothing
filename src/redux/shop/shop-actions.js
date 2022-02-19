@@ -30,4 +30,4 @@ const fetchCollectionsStartAsync = () => {
     }
 }
 
-export { fetchCollectionsStartAsync };
+export { fetchCollectionsStartAsync, fetchCollectionsStart, fetchCollectionsSuccess, fetchCollectionsFailure };

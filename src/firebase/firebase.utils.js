@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, setDoc, collection, writeBatch } from "firebase/firestore";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { getByTitle } from '@testing-library/react';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDNILcT4POhEAJgtcvLV2kr-O3mnsrg4Y0",
@@ -15,13 +14,13 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const provider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 
 //getting the authentication object, so we can use it, or export it
 const auth = getAuth();
 
 const signInWithGoogle = ()=> 
-  signInWithPopup(auth, provider)
+  signInWithPopup(auth, googleProvider)
   .then((result) => {
     // This gives you a Google Access Token. You can use it to access the Google API.
     const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -98,4 +97,13 @@ const signInWithGoogle = ()=>
     }, {});
   }
 
-export { signInWithGoogle, auth, firestore, createUserProfileDocument, convertCollectionsSnapshotToMap, addCollectionAndDocuments }; 
+  const getCurrentUser = () => {
+    return new Promise((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(userAuth => {
+        resolve(userAuth);
+      }, reject)
+      unsubscribe();
+    })
+  }
+
+export { signInWithGoogle, googleProvider, auth, firestore, createUserProfileDocument, convertCollectionsSnapshotToMap, addCollectionAndDocuments, getCurrentUser }; 

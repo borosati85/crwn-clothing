@@ -8,39 +8,22 @@ import SignInPage from "./pages/Signin/SigninPage.component";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage.component";
 import Header from "./components/header/header.component";
 
-import { Route, Routes, Navigate } from "react-router-dom";
-
-import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
-import { onAuthStateChanged } from "firebase/auth";
-import { onSnapshot } from "firebase/firestore";
+import { Route, Routes, Navigate } from "react-router-dom"; 
 
 import { connect } from "react-redux";
-import setCurrentUser from "./redux/user/user.actions";
 import { createStructuredSelector } from "reselect";
 import selectCurrentUser from "./redux/user/user.selectors";
+import { checkUserSession } from "./redux/user/user.actions";
 import { selectCollections, selectCollectionFetching, selectCollectionsLoaded } from "./redux/shop/shop-selectors"
-import { fetchCollectionsStartAsync } from './redux/shop/shop-actions';
+import { fetchCollectionsStart } from './redux/shop/shop-actions';
 
 class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
-    const { setCurrentUser, fetchCollectionsAsync } = this.props;
-    this.unsubscribeFromAuth = onAuthStateChanged(auth, async userAuth => {
-      if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth);
-        onSnapshot(userRef, snapshot => {
-          setCurrentUser({
-            id: snapshot.id,
-            ...snapshot.data()           
-          })
-        })
-      } else {
-        setCurrentUser(null);
-      }
-    })   
-    
-    fetchCollectionsAsync();
+    const { fetchCollectionsStart, checkUserSession } = this.props;
+    fetchCollectionsStart();
+    checkUserSession();
   }
 
   componentWillUnmount() {
@@ -66,8 +49,8 @@ class App extends React.Component {
 }
 
 const dispatchStateToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
-  fetchCollectionsAsync: ()=> dispatch(fetchCollectionsStartAsync())
+  fetchCollectionsStart: ()=> dispatch(fetchCollectionsStart()),
+  checkUserSession: ()=> dispatch(checkUserSession())
 })
 
 const mapStateToProps = createStructuredSelector ({
