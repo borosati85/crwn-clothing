@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 
 import HomePage from "./pages/HomePage/HomePage.component";
@@ -17,35 +17,26 @@ import { checkUserSession } from "./redux/user/user.actions";
 import { selectCollections, selectCollectionFetching, selectCollectionsLoaded } from "./redux/shop/shop-selectors"
 import { fetchCollectionsStart } from './redux/shop/shop-actions';
 
-class App extends React.Component {
-  unsubscribeFromAuth = null;
-
-  componentDidMount() {
-    const { fetchCollectionsStart, checkUserSession } = this.props;
+const App = ({ fetchCollectionsStart, checkUserSession, currentUser }) => {
+  useEffect(() => {
     fetchCollectionsStart();
     checkUserSession();
-  }
+  },[fetchCollectionsStart, checkUserSession])
 
-  componentWillUnmount() {
-    this.unsubscribeFromAuth();
-  }
-
-  render() {
-    return (
-      <div>
-        <Header/>
-        <Routes>
-          <Route path='/' element={<HomePage />} />
-          <Route path='/shop' element={<ShopPage />} />
-          <Route path='/shop/:collectionID' element={<CollectionsPageOverviewContainer />} />
-          <Route path='/checkout' element={<CheckoutPage />} />
-          <Route path='/signin'
-            element={this.props.currentUser ? <Navigate to='/'/> : <SignInPage />}            
-            />
-        </Routes>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <Header/>
+      <Routes>
+        <Route path='/' element={<HomePage />} />
+        <Route path='/shop' element={<ShopPage />} />
+        <Route path='/shop/:collectionID' element={<CollectionsPageOverviewContainer />} />
+        <Route path='/checkout' element={<CheckoutPage />} />
+        <Route path='/signin'
+          element={currentUser ? <Navigate to='/'/> : <SignInPage />}            
+          />
+      </Routes>
+    </div>
+  );
 }
 
 const dispatchStateToProps = (dispatch) => ({
